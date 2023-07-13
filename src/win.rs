@@ -55,7 +55,7 @@ impl ModManagerWindow {
                 .subtitle(mod_version)
                 .build();
             let check_button = CheckButton::new();
-            let label = Label::new(Some("{i}"));
+            let label = Label::new(Some(i.to_string().as_str()));
             mod_action_row.add_prefix(&check_button);
             mod_action_row.add_suffix(&label);
 
