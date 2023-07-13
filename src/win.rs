@@ -49,12 +49,14 @@ impl ModManagerWindow {
             let mod_name: String = folder.file_name().unwrap().to_string_lossy().into();
             let mod_version: String = read_meta_properties(&folder).unwrap();
 
+            let check_button = CheckButton::new();
+            check_button.set_margin_end(16);
             let mod_action_row = ActionRow::builder()
                 .activatable(true)
                 .title(mod_name)
                 .subtitle(mod_version)
+                .activatable_widget(&check_button)
                 .build();
-            let check_button = CheckButton::new();
             let label = Label::new(Some(i.to_string().as_str()));
             mod_action_row.add_prefix(&check_button);
             mod_action_row.add_suffix(&label);
