@@ -2,18 +2,21 @@ use adw::{
     prelude::*,
     Application,
     ActionRow,
+    traits::ActionRowExt,
     HeaderBar,
     Window
 };
 use gtk::{
     Box,
     Button,
+    CheckButton,
+    Label,
     ListBox,
     Orientation,
-    SelectionMode
+    SelectionMode,
 };
 
-use crate::files::{self, read_directory_folders};
+use crate::files::*;
 
 pub struct ModManagerWindow {
     window: Window
@@ -23,6 +26,10 @@ impl ModManagerWindow {
     pub fn new(application: &Application, title: &str) -> Self {
         let button: Button = Button::builder()
             .label("Select Mod Path")
+            .margin_top(16)
+            .margin_bottom(16)
+            .margin_start(16)
+            .margin_end(16)
             .build();
 
         let mod_list_box = ListBox::builder()
@@ -34,41 +41,31 @@ impl ModManagerWindow {
             .css_classes(vec![String::from("boxed-list")])
             .build();
         
-        //let folders = read_directory_folders("path_to_directory");
-//
-        //for folder in folders {
-        //    let mod_name = Some(&folder.file_name().unwrap().to_string_lossy());
-        //    let mod_version = 
-        //}
+        let directory = "/home/bogdan/Documents/Projects/mod-manager/mods";
 
+        let folders = read_directory_folders(directory);
 
+        for (i, folder) in folders.iter().enumerate() {
+            let mod_name: String = folder.file_name().unwrap().to_string_lossy().into();
+            let mod_version: String = read_meta_properties(&folder).unwrap();
 
-        let row = ActionRow::builder()
-            .activatable(true)
-            .title("Click me")
-            .subtitle("")
-            .build();
-        row.connect_activated(|_| {
-            eprintln!("Clicked!");
-        });
+            let mod_action_row = ActionRow::builder()
+                .activatable(true)
+                .title(mod_name)
+                .subtitle(mod_version)
+                .build();
+            let check_button = CheckButton::new();
+            let label = Label::new(Some("{i}"));
+            mod_action_row.add_prefix(&check_button);
+            mod_action_row.add_suffix(&label);
 
-        let list = ListBox::builder()
-            .margin_top(32)
-            .margin_end(32)
-            .margin_bottom(32)
-            .margin_start(32)
-            .selection_mode(SelectionMode::None)
-            // makes the list look nicer
-            .css_classes(vec![String::from("boxed-list")])
-            .build();
-        list.append(&row);
+            mod_list_box.append(&mod_action_row);
+        }
 
-        // Combine the content in a box
         let content = Box::new(Orientation::Vertical, 0);
-        // Adwaitas' ApplicationWindow does not include a HeaderBar
         content.append(&HeaderBar::new());
         content.append(&button);
-        content.append(&list);
+        content.append(&mod_list_box);
 
 
         let window = Window::builder()
